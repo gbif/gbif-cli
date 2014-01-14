@@ -1,0 +1,147 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.gbif</groupId>
+    <artifactId>motherpom</artifactId>
+    <version>10</version>
+  </parent>
+
+  <groupId>org.gbif.common</groupId>
+  <artifactId>gbif-cli</artifactId>
+  <version>0.5-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>GBIF Common :: CLI</name>
+
+  <properties>
+    <bval.version>0.5</bval.version>
+    <fest.version>2.0M10</fest.version>
+    <guava.version>15.0</guava.version>
+    <jackson-databind.version>2.2.3</jackson-databind.version>
+    <jackson-yaml.version>2.2.3</jackson-yaml.version>
+    <jcommander.version>1.30-gbif-20121018</jcommander.version>
+    <junit.version>4.11</junit.version>
+    <logback.version>1.0.9</logback.version>
+    <mockito.version>1.9.5</mockito.version>
+    <slf4j.version>1.7.2</slf4j.version>
+    <validation-api.version>1.1.0.Final</validation-api.version>
+  </properties>
+
+  <scm>
+    <connection>scm:svn:http://gbif-common-resources.googlecode.com/svn/gbif-cli/trunk</connection>
+    <developerConnection>scm:svn:https://gbif-common-resources.googlecode.com/svn/gbif-cli/trunk</developerConnection>
+    <url>http://code.google.com/p/gbif-common-resources/source/browse/#svn/gbif-cli/trunk</url>
+  </scm>
+
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://dev.gbif.org/issues/browse/GBIFCOM</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>jenkins</system>
+    <url>http://builds.gbif.org/job/gbif-cli</url>
+  </ciManagement>
+
+  <distributionManagement>
+    <site>
+      <id>gbif-site</id>
+      <name>Site for the project</name>
+      <url>scp://tools.gbif.org:/var/www/html/sites/common-resources/gbif-cli</url>
+    </site>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>gbif-all</id>
+      <url>http://repository.gbif.org/content/groups/gbif</url>
+    </repository>
+    <repository>
+      <id>gbif-thirdparty</id>
+      <url>http://repository.gbif.org/content/repositories/thirdparty/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+      <version>${jcommander.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson-yaml.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson-databind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>${validation-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!--
+           This has an explicit compile time dependency even though it is only used at runtime.
+           The assembly:plugin seems to not process META-INF/services files for runtime dependency but that's
+           needed to be automatically found. One way of doing it would be to explicitly request an
+           ApacheValidatorFactory but that too implies a compile time dependency.
+           See http://blog.xebia.com/2011/07/20/jar-with-deps-dont-like-meta-infservices/ for more details.
+           Their solutions require custom POM work on the client side. So changing this from runtime to compile seems to
+           be the safest and easiest solution for now.
+      -->
+      <groupId>org.apache.bval</groupId>
+      <artifactId>bval-jsr303</artifactId>
+      <version>${bval.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert-core</artifactId>
+      <version>${fest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>
