@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.gbif</groupId>
     <artifactId>motherpom</artifactId>
-    <version>10</version>
+    <version>14</version>
   </parent>
 
   <groupId>org.gbif.common</groupId>
   <artifactId>gbif-cli</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>GBIF Common :: CLI</name>
@@ -29,28 +29,10 @@
   </properties>
 
   <scm>
-    <connection>scm:svn:http://gbif-common-resources.googlecode.com/svn/gbif-cli/trunk</connection>
-    <developerConnection>scm:svn:https://gbif-common-resources.googlecode.com/svn/gbif-cli/trunk</developerConnection>
-    <url>http://code.google.com/p/gbif-common-resources/source/browse/#svn/gbif-cli/trunk</url>
+    <connection>scm:git:git@github.com:gbif/gbif-cli.git</connection>
+    <url>https://github.com/gbif/gbif-cli</url>
+    <developerConnection>scm:git:git@github.com:gbif/gbif-cli.git</developerConnection>
   </scm>
-
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://dev.gbif.org/issues/browse/GBIFCOM</url>
-  </issueManagement>
-
-  <ciManagement>
-    <system>jenkins</system>
-    <url>http://builds.gbif.org/job/gbif-cli</url>
-  </ciManagement>
-
-  <distributionManagement>
-    <site>
-      <id>gbif-site</id>
-      <name>Site for the project</name>
-      <url>scp://tools.gbif.org:/var/www/html/sites/common-resources/gbif-cli</url>
-    </site>
-  </distributionManagement>
 
   <repositories>
     <repository>
