@@ -9,7 +9,7 @@
 
   <groupId>org.gbif.common</groupId>
   <artifactId>gbif-cli</artifactId>
-  <version>0.6-SNAPSHOT</version>
+  <version>0.6</version>
   <packaging>jar</packaging>
 
   <name>GBIF Common :: CLI</name>
@@ -32,6 +32,7 @@
     <connection>scm:git:git@github.com:gbif/gbif-cli.git</connection>
     <url>https://github.com/gbif/gbif-cli</url>
     <developerConnection>scm:git:git@github.com:gbif/gbif-cli.git</developerConnection>
+    <tag>gbif-cli-0.6</tag>
   </scm>
 
   <repositories>
