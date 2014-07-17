@@ -17,10 +17,10 @@
   <properties>
     <bval.version>0.5</bval.version>
     <fest.version>2.0M10</fest.version>
-    <guava.version>14.0.1</guava.version>
+    <guava.version>15.0</guava.version>
     <jackson-databind.version>2.2.3</jackson-databind.version>
     <jackson-yaml.version>2.2.3</jackson-yaml.version>
-    <jcommander.version>1.30-gbif-20121018</jcommander.version>
+    <jcommander.version>1.35</jcommander.version>
     <junit.version>4.11</junit.version>
     <logback.version>1.1.2</logback.version>
     <mockito.version>1.9.5</mockito.version>
@@ -40,10 +40,12 @@
       <id>gbif-all</id>
       <url>http://repository.gbif.org/content/groups/gbif</url>
     </repository>
+    <!--
     <repository>
       <id>gbif-thirdparty</id>
       <url>http://repository.gbif.org/content/repositories/thirdparty/</url>
     </repository>
+    -->
   </repositories>
 
   <dependencies>
@@ -83,12 +85,6 @@
       <version>${validation-api.version}</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <!--
            This has an explicit compile time dependency even though it is only used at runtime.
            The assembly:plugin seems to not process META-INF/services files for runtime dependency but that's
@@ -103,6 +99,26 @@
       <version>${bval.version}</version>
       <scope>compile</scope>
     </dependency>
+    <!-- LOGGING -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+
+    <!-- TEST SCOPE -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert-core</artifactId>
@@ -114,16 +130,6 @@
       <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
 
