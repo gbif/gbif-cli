@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.gbif</groupId>
     <artifactId>motherpom</artifactId>
-    <version>14</version>
+    <version>16</version>
   </parent>
 
   <groupId>org.gbif.common</groupId>
@@ -18,8 +18,7 @@
     <bval.version>0.5</bval.version>
     <fest.version>2.0M10</fest.version>
     <guava.version>15.0</guava.version>
-    <jackson-databind.version>2.2.3</jackson-databind.version>
-    <jackson-yaml.version>2.2.3</jackson-yaml.version>
+    <jackson2.version>2.4.1</jackson2.version>
     <jcommander.version>1.35</jcommander.version>
     <junit.version>4.11</junit.version>
     <logback.version>1.1.2</logback.version>
@@ -67,12 +66,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>${jackson-yaml.version}</version>
+      <version>${jackson2.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
+      <version>${jackson2.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
