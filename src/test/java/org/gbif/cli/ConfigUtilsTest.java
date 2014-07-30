@@ -2,6 +2,7 @@ package org.gbif.cli;
 
 import java.util.Date;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -21,7 +22,9 @@ public class ConfigUtilsTest {
     private long secret = 9l;
     @PropertyName("nine")
     public long eight = 9l;
+    public UUID uuid = UUID.randomUUID();
   }
+
   @Test
   public void testToProperties() throws Exception {
     Properties props = ConfigUtils.toProperties(new GenericParameters());

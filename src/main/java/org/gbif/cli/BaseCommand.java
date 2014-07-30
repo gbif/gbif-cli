@@ -1,5 +1,7 @@
 package org.gbif.cli;
 
+import org.gbif.cli.converter.ConverterFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -85,6 +87,7 @@ public abstract class BaseCommand extends Command {
   @Override
   public Optional<String> getUsage() {
     JCommander jCommander = new JCommander();
+    jCommander.addConverterFactory(new ConverterFactory());
     jCommander.setProgramName(name);
     jCommander.addObject(new GenericParameters());
     jCommander.addObject(getParameterObject());
@@ -113,6 +116,7 @@ public abstract class BaseCommand extends Command {
     // user requested us to print usage instructions
     GenericParameters genericParameters = new GenericParameters();
     JCommander jCommander = new JCommander(genericParameters);
+    jCommander.addConverterFactory(new ConverterFactory());
     jCommander.setAcceptUnknownOptions(true);
     processCommandLineParameters(jCommander, arguments);
     if (genericParameters.help) {
@@ -124,6 +128,7 @@ public abstract class BaseCommand extends Command {
 
     List<String> remainingArgs = jCommander.getUnknownOptions();
     jCommander = new JCommander(getParameterObject());
+    jCommander.addConverterFactory(new ConverterFactory());
     processCommandLineParameters(jCommander, remainingArgs.toArray(new String[remainingArgs.size()]));
 
     configureLogging(genericParameters);
