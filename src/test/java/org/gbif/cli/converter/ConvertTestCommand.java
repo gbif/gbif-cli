@@ -2,6 +2,7 @@ package org.gbif.cli.converter;
 
 import org.gbif.cli.BaseCommand;
 
+import java.net.URI;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 
@@ -24,6 +25,10 @@ public class ConvertTestCommand extends BaseCommand {
     @Parameter(names = "--sex")
     @NotNull
     public Sex sex;
+
+    @Parameter(names = "--uri")
+    @NotNull
+    public URI uri;
   }
 
   public TestConfig config = new TestConfig();
