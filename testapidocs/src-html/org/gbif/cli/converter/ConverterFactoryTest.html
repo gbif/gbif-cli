@@ -10,21 +10,23 @@
 <span class="sourceLineNo">002</span><a name="line.2"></a>
 <span class="sourceLineNo">003</span>import java.util.UUID;<a name="line.3"></a>
 <span class="sourceLineNo">004</span><a name="line.4"></a>
-<span class="sourceLineNo">005</span>import org.junit.Test;<a name="line.5"></a>
-<span class="sourceLineNo">006</span><a name="line.6"></a>
-<span class="sourceLineNo">007</span>import static org.fest.assertions.api.Assertions.assertThat;<a name="line.7"></a>
-<span class="sourceLineNo">008</span><a name="line.8"></a>
-<span class="sourceLineNo">009</span>public class ConverterFactoryTest {<a name="line.9"></a>
-<span class="sourceLineNo">010</span><a name="line.10"></a>
-<span class="sourceLineNo">011</span>  @Test<a name="line.11"></a>
-<span class="sourceLineNo">012</span>  public void testUUID() {<a name="line.12"></a>
-<span class="sourceLineNo">013</span>    ConvertTestCommand command = new ConvertTestCommand();<a name="line.13"></a>
-<span class="sourceLineNo">014</span>    command.run("--conf", "target/test-classes/convertertest.yaml");<a name="line.14"></a>
-<span class="sourceLineNo">015</span><a name="line.15"></a>
-<span class="sourceLineNo">016</span>    assertThat(command.getConfigurationObject().foo).isEqualTo("Bingo");<a name="line.16"></a>
-<span class="sourceLineNo">017</span>    assertThat(command.getConfigurationObject().uuid).isEqualTo(UUID.fromString("8ea44a78-c6af-11e2-9b88-00145eb45e9a"));<a name="line.17"></a>
-<span class="sourceLineNo">018</span>  }<a name="line.18"></a>
-<span class="sourceLineNo">019</span>}<a name="line.19"></a>
+<span class="sourceLineNo">005</span>import junit.framework.TestCase;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.junit.Test;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static org.fest.assertions.api.Assertions.assertThat;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>public class ConverterFactoryTest {<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>  @Test<a name="line.12"></a>
+<span class="sourceLineNo">013</span>  public void testUUID() {<a name="line.13"></a>
+<span class="sourceLineNo">014</span>    ConvertTestCommand command = new ConvertTestCommand();<a name="line.14"></a>
+<span class="sourceLineNo">015</span>    command.run("--conf", "target/test-classes/convertertest.yaml");<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>    assertThat(command.getConfigurationObject().foo).isEqualTo("Bingo");<a name="line.17"></a>
+<span class="sourceLineNo">018</span>    assertThat(command.getConfigurationObject().uuid).isEqualTo(UUID.fromString("8ea44a78-c6af-11e2-9b88-00145eb45e9a"));<a name="line.18"></a>
+<span class="sourceLineNo">019</span>    TestCase.assertNotNull(command.getConfigurationObject().uri);<a name="line.19"></a>
+<span class="sourceLineNo">020</span>  }<a name="line.20"></a>
+<span class="sourceLineNo">021</span>}<a name="line.21"></a>
 
 
 

@@ -19,145 +19,142 @@
 <span class="sourceLineNo">011</span>import ch.qos.logback.classic.util.ContextInitializer;<a name="line.11"></a>
 <span class="sourceLineNo">012</span>import com.google.common.base.Optional;<a name="line.12"></a>
 <span class="sourceLineNo">013</span>import com.google.common.collect.Maps;<a name="line.13"></a>
-<span class="sourceLineNo">014</span>import com.google.common.io.Closeables;<a name="line.14"></a>
-<span class="sourceLineNo">015</span>import org.slf4j.Logger;<a name="line.15"></a>
-<span class="sourceLineNo">016</span>import org.slf4j.LoggerFactory;<a name="line.16"></a>
-<span class="sourceLineNo">017</span><a name="line.17"></a>
-<span class="sourceLineNo">018</span>import static com.google.common.base.Preconditions.checkNotNull;<a name="line.18"></a>
-<span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>/**<a name="line.20"></a>
-<span class="sourceLineNo">021</span> * This is the main entry point into any CLI application.<a name="line.21"></a>
-<span class="sourceLineNo">022</span> */<a name="line.22"></a>
-<span class="sourceLineNo">023</span>public class Application {<a name="line.23"></a>
-<span class="sourceLineNo">024</span><a name="line.24"></a>
-<span class="sourceLineNo">025</span>  private static final Logger LOG = LoggerFactory.getLogger(Application.class);<a name="line.25"></a>
-<span class="sourceLineNo">026</span><a name="line.26"></a>
-<span class="sourceLineNo">027</span>  // The supported commands in the order they were added<a name="line.27"></a>
-<span class="sourceLineNo">028</span>  private final Map&lt;String, Command&gt; commands = Maps.newTreeMap();<a name="line.28"></a>
-<span class="sourceLineNo">029</span><a name="line.29"></a>
-<span class="sourceLineNo">030</span>  protected Application() {<a name="line.30"></a>
-<span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>  }<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>  /**<a name="line.34"></a>
-<span class="sourceLineNo">035</span>   * Adds a command to this Application. If another command with the same name was already registered it will be<a name="line.35"></a>
-<span class="sourceLineNo">036</span>   * replaced by this new one.<a name="line.36"></a>
-<span class="sourceLineNo">037</span>   *<a name="line.37"></a>
-<span class="sourceLineNo">038</span>   * @param command to add or replace<a name="line.38"></a>
-<span class="sourceLineNo">039</span>   */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>  protected final void addCommand(Command command) {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>    checkNotNull(command);<a name="line.41"></a>
-<span class="sourceLineNo">042</span>    commands.put(command.getName(), command);<a name="line.42"></a>
-<span class="sourceLineNo">043</span>    LOG.debug("Added Command [{}]", command.getName());<a name="line.43"></a>
-<span class="sourceLineNo">044</span>  }<a name="line.44"></a>
-<span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>  /**<a name="line.46"></a>
-<span class="sourceLineNo">047</span>   * Can be overridden by subclasses to initialize themselves for example by adding commands.<a name="line.47"></a>
-<span class="sourceLineNo">048</span>   */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>  public void initialize() {}<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>  /**<a name="line.51"></a>
-<span class="sourceLineNo">052</span>   * Main entry point. This method searches for other commands on the classpath using the {@link ServiceLoader} and<a name="line.52"></a>
-<span class="sourceLineNo">053</span>   * parses the command line to see which command to run.<a name="line.53"></a>
-<span class="sourceLineNo">054</span>   *<a name="line.54"></a>
-<span class="sourceLineNo">055</span>   * @param arguments command line arguments<a name="line.55"></a>
-<span class="sourceLineNo">056</span>   *<a name="line.56"></a>
-<span class="sourceLineNo">057</span>   * @return exit code<a name="line.57"></a>
-<span class="sourceLineNo">058</span>   */<a name="line.58"></a>
-<span class="sourceLineNo">059</span>  @SuppressWarnings("UseOfSystemOutOrSystemErr")<a name="line.59"></a>
-<span class="sourceLineNo">060</span>  public final int run(String... arguments) {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>    configureLogback();<a name="line.61"></a>
-<span class="sourceLineNo">062</span><a name="line.62"></a>
-<span class="sourceLineNo">063</span>    // Try to load additional commands<a name="line.63"></a>
-<span class="sourceLineNo">064</span>    ServiceLoader&lt;Command&gt; loader = ServiceLoader.load(Command.class);<a name="line.64"></a>
-<span class="sourceLineNo">065</span>    for (Command command : loader) {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>      addCommand(command);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>    }<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>    initialize();<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>    if (arguments.length == 0) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>      printUsage(System.err);<a name="line.72"></a>
-<span class="sourceLineNo">073</span>      return 1;<a name="line.73"></a>
-<span class="sourceLineNo">074</span>    }<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>    // Command has to be the very first argument<a name="line.76"></a>
-<span class="sourceLineNo">077</span>    String commandName = arguments[0];<a name="line.77"></a>
-<span class="sourceLineNo">078</span>    if (!commands.containsKey(commandName)) {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>      System.err.println("The command name you supplied is not a valid command.");<a name="line.79"></a>
-<span class="sourceLineNo">080</span>      System.err.println("You supplied: [" + commandName + "]");<a name="line.80"></a>
-<span class="sourceLineNo">081</span>      if (commands.isEmpty()) {<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        System.err.println("There are no valid commands. This is most likely a programming error.");<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        System.err.println("Hint: Maybe you forgot to annotate your commands with '@MetaInfServices(Command.class)'?");<a name="line.83"></a>
-<span class="sourceLineNo">084</span>      } else {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        System.err.println("The valid commands are:");<a name="line.85"></a>
-<span class="sourceLineNo">086</span>      }<a name="line.86"></a>
-<span class="sourceLineNo">087</span>      for (String availableCommand : commands.keySet()) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        System.err.println(" - " + availableCommand);<a name="line.88"></a>
-<span class="sourceLineNo">089</span>      }<a name="line.89"></a>
-<span class="sourceLineNo">090</span>      return 1;<a name="line.90"></a>
-<span class="sourceLineNo">091</span>    }<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>    // Copy the remaining arguments (minus command name)<a name="line.93"></a>
-<span class="sourceLineNo">094</span>    String[] commandArguments = Arrays.copyOfRange(arguments, 1, arguments.length);<a name="line.94"></a>
-<span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>    Command command = commands.get(commandName);<a name="line.96"></a>
-<span class="sourceLineNo">097</span>    try {<a name="line.97"></a>
-<span class="sourceLineNo">098</span>      command.run(commandArguments);<a name="line.98"></a>
-<span class="sourceLineNo">099</span>    } catch (Exception t) {<a name="line.99"></a>
-<span class="sourceLineNo">100</span>      System.err.println("Command threw exception");<a name="line.100"></a>
-<span class="sourceLineNo">101</span>      t.printStackTrace();<a name="line.101"></a>
-<span class="sourceLineNo">102</span>      return 1;<a name="line.102"></a>
-<span class="sourceLineNo">103</span>    }<a name="line.103"></a>
-<span class="sourceLineNo">104</span>    return 0;<a name="line.104"></a>
-<span class="sourceLineNo">105</span>  }<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>  /**<a name="line.107"></a>
-<span class="sourceLineNo">108</span>   * This checks if the user has provided a logback configuration file using the usual logback loading mechanism. If he<a name="line.108"></a>
-<span class="sourceLineNo">109</span>   * does not logback will already have run {@link ch.qos.logback.classic.BasicConfigurator#configureDefaultContext();}<a name="line.109"></a>
-<span class="sourceLineNo">110</span>   * which means we're logging to the console at DEBUG level. To prevent that we try the same mechanism that logback<a name="line.110"></a>
-<span class="sourceLineNo">111</span>   * uses to find a configuration file. If it can't find this file then it resets logback so that it doesn't print<a name="line.111"></a>
-<span class="sourceLineNo">112</span>   * anything.<a name="line.112"></a>
-<span class="sourceLineNo">113</span>   * &lt;p/&gt;<a name="line.113"></a>
-<span class="sourceLineNo">114</span>   * The drawback here is that it doesn't take into account the configurability of logback files using the BaseCommand.<a name="line.114"></a>
-<span class="sourceLineNo">115</span>   */<a name="line.115"></a>
-<span class="sourceLineNo">116</span>  private void configureLogback() {<a name="line.116"></a>
-<span class="sourceLineNo">117</span>    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();<a name="line.117"></a>
-<span class="sourceLineNo">118</span>    ContextInitializer ci = new ContextInitializer(context);<a name="line.118"></a>
-<span class="sourceLineNo">119</span>    URL loggingConfigUrl = ci.findURLOfDefaultConfigurationFile(false);<a name="line.119"></a>
-<span class="sourceLineNo">120</span><a name="line.120"></a>
-<span class="sourceLineNo">121</span>    if (loggingConfigUrl == null) {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>      context.reset();<a name="line.122"></a>
-<span class="sourceLineNo">123</span>    }<a name="line.123"></a>
-<span class="sourceLineNo">124</span>  }<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>  private void printUsage(OutputStream os) {<a name="line.126"></a>
-<span class="sourceLineNo">127</span>    PrintWriter pw = new PrintWriter(os);<a name="line.127"></a>
-<span class="sourceLineNo">128</span>    try {<a name="line.128"></a>
-<span class="sourceLineNo">129</span>      pw.println("Usage");<a name="line.129"></a>
-<span class="sourceLineNo">130</span><a name="line.130"></a>
-<span class="sourceLineNo">131</span>      for (Map.Entry&lt;String, Command&gt; commandEntry : commands.entrySet()) {<a name="line.131"></a>
-<span class="sourceLineNo">132</span>        pw.println();<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        pw.append("Command: ").println(commandEntry.getKey());<a name="line.133"></a>
-<span class="sourceLineNo">134</span>        pw.println("---------------------------------------");<a name="line.134"></a>
-<span class="sourceLineNo">135</span><a name="line.135"></a>
-<span class="sourceLineNo">136</span>        Optional&lt;String&gt; usage = commandEntry.getValue().getUsage();<a name="line.136"></a>
-<span class="sourceLineNo">137</span>        pw.println(usage.or("This command does not have any options"));<a name="line.137"></a>
-<span class="sourceLineNo">138</span>      }<a name="line.138"></a>
+<span class="sourceLineNo">014</span>import org.slf4j.Logger;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.slf4j.LoggerFactory;<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>import static com.google.common.base.Preconditions.checkNotNull;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * This is the main entry point into any CLI application.<a name="line.20"></a>
+<span class="sourceLineNo">021</span> */<a name="line.21"></a>
+<span class="sourceLineNo">022</span>public class Application {<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>  private static final Logger LOG = LoggerFactory.getLogger(Application.class);<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>  // The supported commands in the order they were added<a name="line.26"></a>
+<span class="sourceLineNo">027</span>  private final Map&lt;String, Command&gt; commands = Maps.newTreeMap();<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>  protected Application() {<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>  }<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>  /**<a name="line.33"></a>
+<span class="sourceLineNo">034</span>   * Adds a command to this Application. If another command with the same name was already registered it will be<a name="line.34"></a>
+<span class="sourceLineNo">035</span>   * replaced by this new one.<a name="line.35"></a>
+<span class="sourceLineNo">036</span>   *<a name="line.36"></a>
+<span class="sourceLineNo">037</span>   * @param command to add or replace<a name="line.37"></a>
+<span class="sourceLineNo">038</span>   */<a name="line.38"></a>
+<span class="sourceLineNo">039</span>  protected final void addCommand(Command command) {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>    checkNotNull(command);<a name="line.40"></a>
+<span class="sourceLineNo">041</span>    commands.put(command.getName(), command);<a name="line.41"></a>
+<span class="sourceLineNo">042</span>    LOG.debug("Added Command [{}]", command.getName());<a name="line.42"></a>
+<span class="sourceLineNo">043</span>  }<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>  /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>   * Can be overridden by subclasses to initialize themselves for example by adding commands.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>   */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>  public void initialize() {}<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>  /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>   * Main entry point. This method searches for other commands on the classpath using the {@link ServiceLoader} and<a name="line.51"></a>
+<span class="sourceLineNo">052</span>   * parses the command line to see which command to run.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>   *<a name="line.53"></a>
+<span class="sourceLineNo">054</span>   * @param arguments command line arguments<a name="line.54"></a>
+<span class="sourceLineNo">055</span>   *<a name="line.55"></a>
+<span class="sourceLineNo">056</span>   * @return exit code<a name="line.56"></a>
+<span class="sourceLineNo">057</span>   */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>  @SuppressWarnings("UseOfSystemOutOrSystemErr")<a name="line.58"></a>
+<span class="sourceLineNo">059</span>  public final int run(String... arguments) {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>    configureLogback();<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>    // Try to load additional commands<a name="line.62"></a>
+<span class="sourceLineNo">063</span>    ServiceLoader&lt;Command&gt; loader = ServiceLoader.load(Command.class);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    for (Command command : loader) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>      addCommand(command);<a name="line.65"></a>
+<span class="sourceLineNo">066</span>    }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>    initialize();<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>    if (arguments.length == 0) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>      printUsage(System.err);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>      return 1;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>    // Command has to be the very first argument<a name="line.75"></a>
+<span class="sourceLineNo">076</span>    String commandName = arguments[0];<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    if (!commands.containsKey(commandName)) {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>      System.err.println("The command name you supplied is not a valid command.");<a name="line.78"></a>
+<span class="sourceLineNo">079</span>      System.err.println("You supplied: [" + commandName + "]");<a name="line.79"></a>
+<span class="sourceLineNo">080</span>      if (commands.isEmpty()) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        System.err.println("There are no valid commands. This is most likely a programming error.");<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        System.err.println("Hint: Maybe you forgot to annotate your commands with '@MetaInfServices(Command.class)'?");<a name="line.82"></a>
+<span class="sourceLineNo">083</span>      } else {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        System.err.println("The valid commands are:");<a name="line.84"></a>
+<span class="sourceLineNo">085</span>      }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>      for (String availableCommand : commands.keySet()) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        System.err.println(" - " + availableCommand);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>      }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>      return 1;<a name="line.89"></a>
+<span class="sourceLineNo">090</span>    }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>    // Copy the remaining arguments (minus command name)<a name="line.92"></a>
+<span class="sourceLineNo">093</span>    String[] commandArguments = Arrays.copyOfRange(arguments, 1, arguments.length);<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>    Command command = commands.get(commandName);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>    try {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>      command.run(commandArguments);<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    } catch (Exception t) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>      System.err.println("Command threw exception");<a name="line.99"></a>
+<span class="sourceLineNo">100</span>      t.printStackTrace();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>      return 1;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>    }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>    return 0;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>  }<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>  /**<a name="line.106"></a>
+<span class="sourceLineNo">107</span>   * This checks if the user has provided a logback configuration file using the usual logback loading mechanism. If he<a name="line.107"></a>
+<span class="sourceLineNo">108</span>   * does not logback will already have run {@link ch.qos.logback.classic.BasicConfigurator#configureDefaultContext();}<a name="line.108"></a>
+<span class="sourceLineNo">109</span>   * which means we're logging to the console at DEBUG level. To prevent that we try the same mechanism that logback<a name="line.109"></a>
+<span class="sourceLineNo">110</span>   * uses to find a configuration file. If it can't find this file then it resets logback so that it doesn't print<a name="line.110"></a>
+<span class="sourceLineNo">111</span>   * anything.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>   * &lt;p/&gt;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>   * The drawback here is that it doesn't take into account the configurability of logback files using the BaseCommand.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>   */<a name="line.114"></a>
+<span class="sourceLineNo">115</span>  private void configureLogback() {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();<a name="line.116"></a>
+<span class="sourceLineNo">117</span>    ContextInitializer ci = new ContextInitializer(context);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>    URL loggingConfigUrl = ci.findURLOfDefaultConfigurationFile(false);<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>    if (loggingConfigUrl == null) {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>      context.reset();<a name="line.121"></a>
+<span class="sourceLineNo">122</span>    }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>  }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>  private void printUsage(OutputStream os) {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>    try (PrintWriter pw = new PrintWriter(os)) {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>      pw.println("Usage");<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>      for (Map.Entry&lt;String, Command&gt; commandEntry : commands.entrySet()) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        pw.println();<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        pw.append("Command: ").println(commandEntry.getKey());<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        pw.println("---------------------------------------");<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>        Optional&lt;String&gt; usage = commandEntry.getValue().getUsage();<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        pw.println(usage.or("This command does not have any options"));<a name="line.135"></a>
+<span class="sourceLineNo">136</span>      }<a name="line.136"></a>
+<span class="sourceLineNo">137</span>      pw.flush();<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
 <span class="sourceLineNo">139</span>    } catch (Exception e) {<a name="line.139"></a>
 <span class="sourceLineNo">140</span>      System.err.println("Exception during generation of usage instructions");<a name="line.140"></a>
 <span class="sourceLineNo">141</span>      e.printStackTrace();<a name="line.141"></a>
-<span class="sourceLineNo">142</span>    } finally {<a name="line.142"></a>
-<span class="sourceLineNo">143</span>      pw.flush();<a name="line.143"></a>
-<span class="sourceLineNo">144</span>      Closeables.closeQuietly(pw);<a name="line.144"></a>
-<span class="sourceLineNo">145</span>    }<a name="line.145"></a>
-<span class="sourceLineNo">146</span>  }<a name="line.146"></a>
-<span class="sourceLineNo">147</span><a name="line.147"></a>
-<span class="sourceLineNo">148</span>  public static void main(String[] args) {<a name="line.148"></a>
-<span class="sourceLineNo">149</span>    System.exit(new Application().run(args));<a name="line.149"></a>
-<span class="sourceLineNo">150</span>  }<a name="line.150"></a>
-<span class="sourceLineNo">151</span><a name="line.151"></a>
-<span class="sourceLineNo">152</span>}<a name="line.152"></a>
+<span class="sourceLineNo">142</span>    }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>  }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>  public static void main(String[] args) {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>    System.exit(new Application().run(args));<a name="line.146"></a>
+<span class="sourceLineNo">147</span>  }<a name="line.147"></a>
+<span class="sourceLineNo">148</span><a name="line.148"></a>
+<span class="sourceLineNo">149</span>}<a name="line.149"></a>
 
 
 
