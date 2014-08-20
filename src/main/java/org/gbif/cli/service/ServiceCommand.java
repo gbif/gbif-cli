@@ -2,9 +2,7 @@ package org.gbif.cli.service;
 
 import org.gbif.cli.BaseCommand;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Service;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +17,6 @@ public abstract class ServiceCommand extends BaseCommand {
 
   private static final Logger LOG = LoggerFactory.getLogger(ServiceCommand.class);
 
-  private final Thread mainThread = Thread.currentThread();
-
-  private volatile boolean running = true;
-
   protected ServiceCommand(String name) {
     super(name);
   }
@@ -31,39 +25,26 @@ public abstract class ServiceCommand extends BaseCommand {
    * This method will be called after the command line arguments and the configuration file have been processed.
    * <p/>
    * The service will be started and on shutdown of the JVM it will also try to execute an orderly shutdown of the
-   * service (using {@link Service#start()} and {@link Service#stop()} respectively).
+   * service (using {@link Service#startAsync()} and {@link Service#stopAsync()} respectively).
    */
   protected abstract Service getService();
 
   @Override
   protected final void doRun() {
-    final ForwardingJoinableService service = new ForwardingJoinableService(getService());
+    final Service service = getService();
 
     Runtime.getRuntime().addShutdownHook(new ShutdownThread(service));
 
-    LOG.info("Starting service...");
+    LOG.info("Service starting ...");
     try {
-      service.startAndWait();
-      LOG.info("Service started, now in state [{}]", service.state());
-    } catch (UncheckedExecutionException e) {
+      service.startAsync();
+      service.awaitRunning();
+      LOG.info("Service started");
+    } catch (IllegalStateException e) {
+      LOG.warn("Service failed to start", e);
+    } catch (RuntimeException e) {
       LOG.warn("Service failed to start", e);
     }
-
-    try {
-      while (service.state() == Service.State.RUNNING) {
-        service.join();
-        LOG.debug("Got notified by service, service terminated");
-      }
-    } catch (InterruptedException e) {
-      LOG.debug("We were interrupted waiting for the service to stop, will rejoin", e);
-    }
-
-    synchronized (mainThread) {
-      running = false;
-      mainThread.notifyAll();
-    }
-
-    LOG.debug("Application shutting down");
   }
 
   /**
@@ -73,9 +54,9 @@ public abstract class ServiceCommand extends BaseCommand {
   @SuppressWarnings("ClassExplicitlyExtendsThread")
   private class ShutdownThread extends Thread {
 
-    private final ForwardingJoinableService service;
+    private final Service service;
 
-    private ShutdownThread(ForwardingJoinableService service) {
+    private ShutdownThread(Service service) {
       this.service = service;
     }
 
@@ -84,20 +65,12 @@ public abstract class ServiceCommand extends BaseCommand {
       LOG.debug("Shutdown Hook called");
       try {
         if (service.isRunning()) {
-          LOG.info("Service stopping...");
-          ListenableFuture<Service.State> stopFuture = service.stop();
+          LOG.info("Service stopping ...");
+          service.stopAsync();
           // TODO: Maybe wait with a timeout here after which we force close?
-          stopFuture.get();
+          service.awaitTerminated();
           LOG.info("Service stopped");
         }
-        // TODO: Maybe wait with a timeout here after which we force close?
-        LOG.debug("Waiting for main Thread to exit");
-        synchronized (mainThread) {
-          while (running) {
-            mainThread.wait();
-          }
-        }
-        LOG.debug("Main thread exited");
       } catch (Exception e) {
         LOG.debug("Caught exception in shutdown hook", e);
       }

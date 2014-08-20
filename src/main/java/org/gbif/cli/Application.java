@@ -11,7 +11,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.google.common.io.Closeables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,8 +123,7 @@ public class Application {
   }
 
   private void printUsage(OutputStream os) {
-    PrintWriter pw = new PrintWriter(os);
-    try {
+    try (PrintWriter pw = new PrintWriter(os)) {
       pw.println("Usage");
 
       for (Map.Entry<String, Command> commandEntry : commands.entrySet()) {
@@ -136,12 +134,11 @@ public class Application {
         Optional<String> usage = commandEntry.getValue().getUsage();
         pw.println(usage.or("This command does not have any options"));
       }
+      pw.flush();
+
     } catch (Exception e) {
       System.err.println("Exception during generation of usage instructions");
       e.printStackTrace();
-    } finally {
-      pw.flush();
-      Closeables.closeQuietly(pw);
     }
   }
 

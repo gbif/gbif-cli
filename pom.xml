@@ -15,10 +15,12 @@
   <name>GBIF Common :: CLI</name>
 
   <properties>
+    <jdkLevel>1.7</jdkLevel>
+
     <bval.version>0.5</bval.version>
     <fest.version>2.0M10</fest.version>
-    <guava.version>15.0</guava.version>
-    <jackson2.version>2.4.1</jackson2.version>
+    <guava.version>17.0</guava.version>
+    <jackson2.version>2.4.2</jackson2.version>
     <jcommander.version>1.35</jcommander.version>
     <junit.version>4.11</junit.version>
     <logback.version>1.1.2</logback.version>
