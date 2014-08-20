@@ -3,13 +3,16 @@ package org.gbif.cli.service;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.Service;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ServiceCommandTest {
 
-  public class TestService extends ServiceCommand {
+  public static class TestService extends ServiceCommand {
+    private static final Logger LOG = LoggerFactory.getLogger(TestService.class);
     private boolean running;
 
     private final Service service;
@@ -18,12 +21,18 @@ public class ServiceCommandTest {
       service = new AbstractIdleService() {
         @Override
         protected void startUp() throws Exception {
+          LOG.debug("Start test service ...");
+          Thread.sleep(1000);
           running = true;
+          LOG.debug("test service started");
         }
 
         @Override
         protected void shutDown() throws Exception {
+          LOG.debug("shutdown test service ...");
+          Thread.sleep(1000);
           running = false;
+          LOG.debug("test service stopped");
         }
       };
     }
@@ -78,4 +87,5 @@ public class ServiceCommandTest {
     // service still running
     assertTrue(command.isRunning());
   }
+
 }

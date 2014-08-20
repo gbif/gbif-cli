@@ -45,6 +45,18 @@ public abstract class ServiceCommand extends BaseCommand {
     } catch (RuntimeException e) {
       LOG.warn("Service failed to start", e);
     }
+
+    // keep it running
+      synchronized(this) {
+        while (true) {
+          LOG.debug("Main command waiting for shutdown ...");
+          try {
+            this.wait();
+          } catch (InterruptedException e) {
+            LOG.debug("We were interrupted waiting for the service to stop, wait again", e);
+          }
+        }
+      }
   }
 
   /**
