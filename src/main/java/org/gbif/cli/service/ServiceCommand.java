@@ -25,7 +25,7 @@ public abstract class ServiceCommand extends BaseCommand {
    * This method will be called after the command line arguments and the configuration file have been processed.
    * <p/>
    * The service will be started and on shutdown of the JVM it will also try to execute an orderly shutdown of the
-   * service (using {@link Service#startAsync()} and {@link Service#stopAsync()} respectively).
+   * service (using {@link Service#startAndWait()} and {@link Service#stopAndWait()} respectively).
    */
   protected abstract Service getService();
 
@@ -37,8 +37,10 @@ public abstract class ServiceCommand extends BaseCommand {
 
     LOG.info("Service starting ...");
     try {
-      service.startAsync();
-      service.awaitRunning();
+      service.startAndWait();
+      // guava 15+ only
+//      service.startAsync();
+//      service.awaitRunning();
       LOG.info("Service started");
     } catch (IllegalStateException e) {
       LOG.warn("Service failed to start", e);
@@ -78,9 +80,11 @@ public abstract class ServiceCommand extends BaseCommand {
       try {
         if (service.isRunning()) {
           LOG.info("Service stopping ...");
-          service.stopAsync();
-          // TODO: Maybe wait with a timeout here after which we force close?
-          service.awaitTerminated();
+          service.stopAndWait();
+          // guava 15+ only
+//          service.stopAsync();
+//          // TODO: Maybe wait with a timeout here after which we force close?
+//          service.awaitTerminated();
           LOG.info("Service stopped");
         }
       } catch (Exception e) {
