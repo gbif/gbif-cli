@@ -37,10 +37,12 @@ public abstract class ServiceCommand extends BaseCommand {
 
     LOG.info("Service starting ...");
     try {
-      service.startAndWait();
+      // guava 14:
+      //service.startAndWait();
+
       // guava 15+ only
-//      service.startAsync();
-//      service.awaitRunning();
+      service.startAsync();
+      service.awaitRunning();
       LOG.info("Service started");
     } catch (IllegalStateException e) {
       LOG.warn("Service failed to start", e);
@@ -80,11 +82,13 @@ public abstract class ServiceCommand extends BaseCommand {
       try {
         if (service.isRunning()) {
           LOG.info("Service stopping ...");
-          service.stopAndWait();
+          // guava 14:
+          //service.stopAndWait();
+
           // guava 15+ only
-//          service.stopAsync();
-//          // TODO: Maybe wait with a timeout here after which we force close?
-//          service.awaitTerminated();
+          service.stopAsync();
+          // TODO: Maybe wait with a timeout here after which we force close?
+          service.awaitTerminated();
           LOG.info("Service stopped");
         }
       } catch (Exception e) {
