@@ -15,7 +15,7 @@
   <name>GBIF Common :: CLI</name>
 
   <properties>
-    <jdkLevel>1.8</jdkLevel>
+    <jdkLevel>1.7</jdkLevel>
 
     <bval.version>0.5</bval.version>
     <fest.version>2.0M10</fest.version>
@@ -41,12 +41,6 @@
       <id>gbif-all</id>
       <url>http://repository.gbif.org/content/groups/gbif</url>
     </repository>
-    <!--
-    <repository>
-      <id>gbif-thirdparty</id>
-      <url>http://repository.gbif.org/content/repositories/thirdparty/</url>
-    </repository>
-    -->
   </repositories>
 
   <dependencies>
