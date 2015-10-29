@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * To be used in JComannder configurations to indicates a property name for configuration parameter.
+ * To be used in JCommander configurations to indicates a property name for configuration parameter.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
