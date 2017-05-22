@@ -25,7 +25,7 @@ public abstract class ServiceCommand extends BaseCommand {
    * This method will be called after the command line arguments and the configuration file have been processed.
    * <p/>
    * The service will be started and on shutdown of the JVM it will also try to execute an orderly shutdown of the
-   * service (using {@link Service#startAndWait()} and {@link Service#stopAndWait()} respectively).
+   * service (using {@link Service#startAsync()} and {@link Service#stopAsync()} respectively).
    */
   protected abstract Service getService();
 
