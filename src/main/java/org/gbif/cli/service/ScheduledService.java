@@ -22,6 +22,11 @@ public abstract class ScheduledService extends AbstractIdleService {
   protected abstract void scheduledRun();
 
   /**
+   * Method called when this module is destroyed.
+   */
+  protected abstract void scheduledDestroy();
+
+  /**
    * At what time the scheduling should start.
    * Calling this method multiple time may result in different values if the timeStart is LocalTime.now().
    *
@@ -50,5 +55,6 @@ public abstract class ScheduledService extends AbstractIdleService {
   @Override
   final protected void shutDown() throws Exception {
     scheduler.shutdown();
+    scheduledDestroy();
   }
 }
