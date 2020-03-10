@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.beust.jcommander.Parameter;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 public class GenericParameters {
 
@@ -37,7 +37,7 @@ public class GenericParameters {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("help", help)
       .add("configurationFiles", configurationFiles)
       .add("logbackConfig", logbackConfig)
