@@ -1,10 +1,9 @@
 package org.gbif.cli;
 
+import com.beust.jcommander.Parameter;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.beust.jcommander.Parameter;
-import com.google.common.base.MoreObjects;
+import java.util.StringJoiner;
 
 public class GenericParameters {
 
@@ -37,13 +36,12 @@ public class GenericParameters {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("help", help)
-      .add("configurationFiles", configurationFiles)
-      .add("logbackConfig", logbackConfig)
-      .add("loglevel", logLevel)
-      .add("verbose", verbose)
-      .toString();
+    return new StringJoiner(", ", GenericParameters.class.getSimpleName() + "[", "]")
+        .add("help=" + help)
+        .add("configurationFiles=" + configurationFiles)
+        .add("logbackConfig='" + logbackConfig + "'")
+        .add("logLevel='" + logLevel + "'")
+        .add("verbose=" + verbose)
+        .toString();
   }
-
 }
