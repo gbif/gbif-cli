@@ -95,7 +95,6 @@
       <artifactId>jakarta.el</artifactId>
       <version>${jakarta.el.version}</version>
     </dependency>
-
     <!-- LOGGING -->
     <dependency>
       <groupId>org.slf4j</groupId>
