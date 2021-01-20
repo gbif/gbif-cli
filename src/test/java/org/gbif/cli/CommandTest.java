@@ -1,25 +1,27 @@
 package org.gbif.cli;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CommandTest {
 
   @Test
   public void testCommand() {
     Command command = new TestCommand("test");
-    assertThat(command.getName()).isEqualTo("test");
-    assertThat(command.getUsage().isPresent()).isFalse();
+    assertEquals("test", command.getName());
+    assertFalse(command.getUsage().isPresent());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullConstructor() {
-    new TestCommand(null);
+    assertThrows(NullPointerException.class, () -> new TestCommand(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyConstructor() {
-    new TestCommand("");
+    assertThrows(IllegalArgumentException.class, () -> new TestCommand(""));
   }
 }

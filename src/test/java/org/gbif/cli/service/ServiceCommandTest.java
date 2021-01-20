@@ -2,17 +2,18 @@ package org.gbif.cli.service;
 
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.Service;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Ignore
+@Disabled
 public class ServiceCommandTest {
 
+  @SuppressWarnings("UnstableApiUsage")
   public static class TestService extends ServiceCommand {
     private static final Logger LOG = LoggerFactory.getLogger(TestService.class);
     private boolean running;
@@ -89,5 +90,4 @@ public class ServiceCommandTest {
     // service still running
     assertTrue(command.isRunning());
   }
-
 }

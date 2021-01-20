@@ -1,8 +1,9 @@
 package org.gbif.cli;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -16,10 +17,10 @@ public class ApplicationTest {
     app.addCommand(command);
 
     int returnCode = app.run();
-    assertThat(returnCode).isGreaterThan(0);
+    assertTrue(returnCode > 0);
 
     returnCode = app.run("foo");
-    assertThat(returnCode).isGreaterThan(0);
+    assertTrue(returnCode > 0);
   }
 
   @Test
@@ -27,10 +28,10 @@ public class ApplicationTest {
     Application app = new Application();
 
     int returnCode = app.run();
-    assertThat(returnCode).isGreaterThan(0);
+    assertTrue(returnCode > 0);
 
     returnCode = app.run("foo");
-    assertThat(returnCode).isGreaterThan(0);
+    assertTrue(returnCode > 0);
   }
 
   @Test
@@ -41,7 +42,7 @@ public class ApplicationTest {
     app.addCommand(command);
     int returnCode = app.run("mock", "foo", "bar");
     verify(command).run("foo", "bar");
-    assertThat(returnCode).isZero();
+    assertEquals(0, returnCode);
   }
 
   @Test
@@ -53,7 +54,6 @@ public class ApplicationTest {
     doThrow(new RuntimeException("foo")).when(command).run("foo", "bar");
     int returnCode = app.run("mock", "foo", "bar");
     verify(command).run("foo", "bar");
-    assertThat(returnCode).isGreaterThan(0);
+    assertTrue(returnCode > 0);
   }
-
 }

@@ -1,8 +1,10 @@
 package org.gbif.cli;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BaseCommandTest {
 
@@ -12,72 +14,62 @@ public class BaseCommandTest {
     command.run("-h");
   }
 
-  @Test(expected = CommandException.class)
+  @Test
   public void testFailure() {
     Command command = new TestBaseCommand();
-    command.run("foobar");
+    assertThrows(CommandException.class, () -> command.run("foobar"));
   }
 
   @Test
   public void testYamlConfigFile() {
     TestBaseCommand command = new TestBaseCommand();
     command.run("--foo", "CLI", "--conf", "target/test-classes/configtest.yaml");
-    assertThat(command.getConfigurationObject().foo).isEqualTo("YAML");
-    assertThat(command.getParameterObject().foo).isEqualTo("CLI");
+    assertEquals("YAML", command.getConfigurationObject().foo);
+    assertEquals("CLI", command.getParameterObject().foo);
   }
 
   @Test
   public void testJsonConfigFile() {
     TestBaseCommand command = new TestBaseCommand();
     command.run("--foo", "CLI", "--conf", "target/test-classes/configtest.json");
-    assertThat(command.getConfigurationObject().foo).isEqualTo("JSON");
-    assertThat(command.getParameterObject().foo).isEqualTo("CLI");
+    assertEquals("JSON", command.getConfigurationObject().foo);
+    assertEquals("CLI", command.getParameterObject().foo);
   }
 
   @Test
   public void testTwoConfigFiles() {
     TestBaseCommand command = new TestBaseCommand();
     command.run("--foo", "CLI", "--conf", "target/test-classes/configtest.json", "target/test-classes/configtest.yaml");
-    assertThat(command.getConfigurationObject().foo).isEqualTo("YAML");
-    assertThat(command.getParameterObject().foo).isEqualTo("CLI");
+    assertEquals("YAML", command.getConfigurationObject().foo);
+    assertEquals("CLI", command.getParameterObject().foo);
 
     command.run("--foo", "CLI", "--conf", "target/test-classes/configtest.yaml", "target/test-classes/configtest.json");
-    assertThat(command.getConfigurationObject().foo).isEqualTo("JSON");
-    assertThat(command.getParameterObject().foo).isEqualTo("CLI");
+    assertEquals("JSON", command.getConfigurationObject().foo);
+    assertEquals("CLI", command.getParameterObject().foo);
   }
 
-  @Test(expected = CommandException.class)
+  @Test
   public void testIllegalFileName() {
     TestBaseCommand command = new TestBaseCommand();
-    try {
-      command.run("--foo", "CLI", "--conf", "doesnotexist");
-    } catch (CommandException e) {
-      assertThat(e).hasMessageContaining("exist");
-      throw e;
-    }
+    Throwable e = assertThrows(
+        CommandException.class,
+        () -> command.run("--foo", "CLI", "--conf", "doesnotexist"));
+    assertTrue(e.getMessage().contains("exist"));
   }
 
-  @Test(expected = CommandException.class)
+  @Test
   public void testIllegalFile() {
     TestBaseCommand command = new TestBaseCommand();
-    try {
-      command.run("--foo", "CLI", "--conf", "target/test-classes/invalid.json");
-    } catch (CommandException e) {
-      assertThat(e).hasMessageContaining("reading");
-      throw e;
-    }
+    Throwable e = assertThrows(
+        CommandException.class,
+        () -> command.run("--foo", "CLI", "--conf", "target/test-classes/invalid.json"));
+    assertTrue(e.getMessage().contains("reading"));
   }
 
-  @Test(expected = CommandException.class)
+  @Test
   public void testFailedValidation() {
     TestBaseCommand command = new TestBaseCommand();
-    try {
-      command.run();
-    } catch (CommandException e) {
-      assertThat(e).hasMessageContaining("validation");
-      throw e;
-    }
+    Throwable e = assertThrows(CommandException.class, command::run);
+    assertTrue(e.getMessage().contains("validation"));
   }
-
-
 }

@@ -11,6 +11,7 @@ import com.beust.jcommander.IStringConverterFactory;
  */
 public class ConverterFactory implements IStringConverterFactory {
 
+  @Override
   public Class<? extends IStringConverter<?>> getConverter(Class forType) {
     if (forType.equals(UUID.class)) {
       return UuidConverter.class;
