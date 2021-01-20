@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Optional;
 import org.gbif.cli.converter.ConverterFactory;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -43,8 +44,12 @@ public abstract class BaseCommand extends Command {
 
   private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
 
-  private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
-
+  private static final Validator VALIDATOR =
+      Validation.byDefaultProvider()
+          .configure()
+          .messageInterpolator(new ParameterMessageInterpolator())
+          .buildValidatorFactory()
+          .getValidator();
 
   static {
     MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
