@@ -9,6 +9,7 @@ import java.util.ServiceLoader;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -114,9 +115,7 @@ public class Application {
    */
   private void configureLogback() {
     LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-    ContextInitializer ci = new ContextInitializer(context);
-    URL loggingConfigUrl = ci.findURLOfDefaultConfigurationFile(false);
-
+    URL loggingConfigUrl = ConfigurationWatchListUtil.getMainWatchURL(context);
     if (loggingConfigUrl == null) {
       context.reset();
     }
