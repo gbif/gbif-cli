@@ -4,9 +4,9 @@ import org.gbif.cli.BaseCommand;
 
 import java.net.URI;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 import com.beust.jcommander.Parameter;
+import jakarta.validation.constraints.NotNull;
 
 public class ConvertTestCommand extends BaseCommand {
 
