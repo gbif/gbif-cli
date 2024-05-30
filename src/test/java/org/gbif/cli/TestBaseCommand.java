@@ -1,6 +1,6 @@
 package org.gbif.cli;
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 import com.beust.jcommander.Parameter;
 
