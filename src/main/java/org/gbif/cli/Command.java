@@ -1,9 +1,9 @@
 package org.gbif.cli;
 
-import com.google.common.base.Optional;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Optional;
 
 /**
  * Base class for commands which needs to be subclassed.
@@ -24,7 +24,7 @@ public abstract class Command {
   /**
    * Optionally returns a string describing the usage of this command.
    *
-   * @return {@link Optional#absent()} if this command doesn't take any further parameters otherwise a string
+   * @return {@link Optional#absent()} ()} if this command doesn't take any further parameters otherwise a string
    *         describing
    *         the parameters
    */

@@ -27,6 +27,7 @@
     <validation-api.version>2.0.1.Final</validation-api.version>
     <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
     <jakarta.el.version>3.0.3</jakarta.el.version>
+    <micrometer.version>1.12.3</micrometer.version>
   </properties>
 
   <scm>
@@ -93,6 +94,17 @@
       <groupId>org.glassfish</groupId>
       <artifactId>jakarta.el</artifactId>
       <version>${jakarta.el.version}</version>
+    </dependency>
+    <!-- METRICS -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>${micrometer.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>${micrometer.version}</version>
     </dependency>
     <!-- LOGGING -->
     <dependency>
