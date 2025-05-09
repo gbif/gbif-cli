@@ -99,7 +99,7 @@ public abstract class BaseCommand extends Command {
     StringBuilder sb = new StringBuilder();
     jCommander.usage(sb);
 
-    String sep = System.getProperty("line.separator");
+    String sep = System.lineSeparator();
     try {
       JsonSchema jsonSchema = MAPPER.generateJsonSchema(getConfigurationObject().getClass());
       sb.append(sep);
@@ -124,7 +124,7 @@ public abstract class BaseCommand extends Command {
     jCommander.setAcceptUnknownOptions(true);
     processCommandLineParameters(jCommander, arguments);
     if (genericParameters.help) {
-      System.out.println(getUsage().get());
+      LOG.info(String.valueOf(getUsage().isPresent()));
       return;
     }
 
@@ -145,8 +145,7 @@ public abstract class BaseCommand extends Command {
     try {
       jCommander.parse(arguments);
     } catch (ParameterException e) {
-      System.err.println("Error parsing command line options:");
-      System.err.println(e.getMessage());
+      LOG.error("Error parsing command line options: {}", e.getMessage());
       throw new CommandException("Error during command line parsing", e);
     }
   }
@@ -161,17 +160,14 @@ public abstract class BaseCommand extends Command {
     for (String fileName : configurationFiles) {
       File file = new File(fileName);
       if (!file.exists()) {
-        System.err.println("Error reading configuration file [" + fileName + "] because it does not exist");
+        LOG.error("Error reading configuration file [{}] because it does not exist", fileName);
         throw new CommandException("Error reading configuration file [" + fileName + "] because it does not exist");
       }
       ObjectReader reader = MAPPER.readerForUpdating(getConfigurationObject());
       try {
         reader.readValue(file);
-      } catch (IOException e) {
-        System.err.println("Error reading configuration file [" + fileName + "]");
-        throw new CommandException("Error reading configuration file [" + fileName + "]", e);
-      } catch (ParserException e) {
-        System.err.println("Error reading configuration file [" + fileName + "]");
+      } catch (IOException | ParserException e) {
+        LOG.error("Error reading configuration file [{}]", fileName);
         throw new CommandException("Error reading configuration file [" + fileName + "]", e);
       }
     }
@@ -260,9 +256,9 @@ public abstract class BaseCommand extends Command {
   private void validateObject(Validator validator, Object object) {
     Set<ConstraintViolation<Object>> violations = validator.validate(object);
     if (!violations.isEmpty()) {
-      System.err.println("Failed validation of command line parameters:");
+      LOG.error("Failed validation of command line parameters:");
       for (ConstraintViolation<Object> violation : violations) {
-        System.err.println("  " + violation.getPropertyPath() + ": " + violation.getMessage());
+        LOG.error(" {}: {}", violation.getPropertyPath(), violation.getMessage());
       }
       throw new CommandException("Failed validation");
     }

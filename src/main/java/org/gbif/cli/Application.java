@@ -1,17 +1,15 @@
 package org.gbif.cli;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
+import com.google.common.base.Optional;
 import java.util.ServiceLoader;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import org.gbif.cli.metrics.CommandMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,6 @@ public class Application {
   private final Map<String, Command> commands = Maps.newTreeMap();
 
   protected Application() {
-
   }
 
   /**
@@ -56,7 +53,6 @@ public class Application {
    *
    * @return exit code
    */
-  @SuppressWarnings("UseOfSystemOutOrSystemErr")
   public final int run(String... arguments) {
     configureLogback();
 
@@ -69,23 +65,23 @@ public class Application {
     initialize();
 
     if (arguments.length == 0) {
-      printUsage(System.err);
+      printUsage();
       return 1;
     }
 
     // Command has to be the very first argument
     String commandName = arguments[0];
     if (!commands.containsKey(commandName)) {
-      System.err.println("The command name you supplied is not a valid command.");
-      System.err.println("You supplied: [" + commandName + "]");
+      LOG.error("The command name you supplied is not a valid command.");
+      LOG.error("You supplied: [{}]", commandName);
       if (commands.isEmpty()) {
-        System.err.println("There are no valid commands. This is most likely a programming error.");
-        System.err.println("Hint: Maybe you forgot to annotate your commands with '@MetaInfServices(Command.class)'?");
+        LOG.error("There are no valid commands. This is most likely a programming error.");
+        LOG.error("Hint: Maybe you forgot to annotate your commands with '@MetaInfServices(Command.class)'?");
       } else {
-        System.err.println("The valid commands are:");
-      }
-      for (String availableCommand : commands.keySet()) {
-        System.err.println(" - " + availableCommand);
+        LOG.error("The valid commands are:");
+        for (String availableCommand : commands.keySet()) {
+          LOG.error(" - {}", availableCommand);
+        }
       }
       return 1;
     }
@@ -93,12 +89,35 @@ public class Application {
     // Copy the remaining arguments (minus command name)
     String[] commandArguments = Arrays.copyOfRange(arguments, 1, arguments.length);
 
+    // Parse the generic parameters to check for metrics configuration
+    GenericParameters genericParameters = new GenericParameters();
+    try {
+      new com.beust.jcommander.JCommander(genericParameters).parse(commandArguments);
+      
+      // Initialize metrics if enabled
+      if (genericParameters.metricsEnabled) {
+        LOG.info("Initializing metrics on port {}", genericParameters.metricsPort);
+        CommandMetrics.initializeMetrics(genericParameters.metricsPort);
+      }
+    } catch (Exception e) {
+      // Ignore parsing errors, they will be handled properly later
+      LOG.debug("Error parsing metrics parameters", e);
+    }
+
     Command command = commands.get(commandName);
     try {
-      command.run(commandArguments);
+      if (genericParameters.metricsEnabled) {
+        // Record command execution metrics
+        CommandMetrics.registerCommandExecution(commandName);
+        CommandMetrics.timeCommand(commandName, () -> command.run(commandArguments));
+      } else {
+        command.run(commandArguments);
+      }
     } catch (Exception t) {
-      System.err.println("Command threw exception");
-      t.printStackTrace();
+      if (genericParameters.metricsEnabled) {
+        CommandMetrics.registerCommandError(commandName);
+      }
+      LOG.error("Command threw exception", t);
       return 1;
     }
     return 0;
@@ -121,28 +140,19 @@ public class Application {
     }
   }
 
-  private void printUsage(OutputStream os) {
-    try (PrintWriter pw = new PrintWriter(os)) {
-      pw.println("Usage");
+  private void printUsage() {
+    LOG.info("Usage");
+    for (Map.Entry<String, Command> commandEntry : commands.entrySet()) {
+      LOG.info("");
+      LOG.info("Command: {}", commandEntry.getKey());
+      LOG.info("---------------------------------------");
 
-      for (Map.Entry<String, Command> commandEntry : commands.entrySet()) {
-        pw.println();
-        pw.append("Command: ").println(commandEntry.getKey());
-        pw.println("---------------------------------------");
-
-        Optional<String> usage = commandEntry.getValue().getUsage();
-        pw.println(usage.or("This command does not have any options"));
-      }
-      pw.flush();
-
-    } catch (Exception e) {
-      System.err.println("Exception during generation of usage instructions");
-      e.printStackTrace();
+      Optional<String> usage = commandEntry.getValue().getUsage();
+      LOG.info(usage.or("This command does not have any options"));
     }
   }
 
   public static void main(String[] args) {
     System.exit(new Application().run(args));
   }
-
 }

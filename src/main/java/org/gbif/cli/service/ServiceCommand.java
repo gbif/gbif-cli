@@ -44,8 +44,6 @@ public abstract class ServiceCommand extends BaseCommand {
       service.startAsync();
       service.awaitRunning();
       LOG.info("Service started");
-    } catch (IllegalStateException e) {
-      LOG.warn("Service failed to start", e);
     } catch (RuntimeException e) {
       LOG.warn("Service failed to start", e);
     }
