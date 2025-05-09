@@ -28,6 +28,8 @@
     <micrometer.version>1.12.3</micrometer.version>
     <slf4j.version>2.0.7</slf4j.version>
     <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+    <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+    <expressly.version>5.0.0</expressly.version>
   </properties>
 
   <scm>
@@ -88,13 +90,13 @@
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
-      <version>3.0.2</version>
+      <version>${jakarta.validation-api.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.glassfish.expressly</groupId>
       <artifactId>expressly</artifactId>
-      <version>5.0.0</version>
+      <version>${expressly.version}</version>
     </dependency>
 
     <!-- METRICS -->
