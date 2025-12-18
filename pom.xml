@@ -61,8 +61,7 @@
       <artifactId>logstash-logback-encoder</artifactId>
       <version>${logstash-logback-encoder.version}</version>
     </dependency>
-
-      <dependency>
+    <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
       <version>${jcommander.version}</version>
@@ -97,7 +96,6 @@
       <artifactId>jakarta.validation-api</artifactId>
       <version>${jakarta.validation-api.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.glassfish.expressly</groupId>
       <artifactId>expressly</artifactId>
