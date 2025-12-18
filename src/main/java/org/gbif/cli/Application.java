@@ -133,10 +133,16 @@ public class Application {
    * The drawback here is that it doesn't take into account the configurability of logback files using the BaseCommand.
    */
   private void configureLogback() {
-    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-    URL loggingConfigUrl = ConfigurationWatchListUtil.getMainWatchURL(context);
-    if (loggingConfigUrl == null) {
-      context.reset();
+    org.slf4j.ILoggerFactory ilf = LoggerFactory.getILoggerFactory();
+    if (ilf instanceof LoggerContext) {
+      LoggerContext context = (LoggerContext) ilf;
+      URL loggingConfigUrl = ConfigurationWatchListUtil.getMainWatchURL(context);
+      if (loggingConfigUrl == null) {
+        context.reset();
+      }
+    } else {
+      LOG.warn("No logback LoggerContext available (found {}). SLF4J is using a different binding; logging configuration will be skipped.",
+          ilf.getClass().getName());
     }
   }
 
