@@ -17,18 +17,18 @@
   <properties>
     <jdkLevel>17</jdkLevel>
 
-    <guava.version>23.0</guava.version>
-    <jackson.version>2.17.1</jackson.version>
+    <guava.version>33.5.0-jre</guava.version>
+    <jackson.version>2.19.4</jackson.version>
     <jcommander.version>1.60</jcommander.version>
-    <junit.version>5.6.3</junit.version>
-    <logback.version>1.5.10</logback.version>
-    <mockito.version>3.3.3</mockito.version>
-    <jakarta.el.version>3.0.3</jakarta.el.version>
-    <micrometer.version>1.12.3</micrometer.version>
-    <slf4j.version>2.0.7</slf4j.version>
-    <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
-    <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
-    <expressly.version>5.0.0</expressly.version>
+    <junit.version>5.12.2</junit.version>
+    <logback.version>1.5.21</logback.version>
+    <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
+    <mockito.version>5.20.0</mockito.version>
+    <micrometer.version>1.15.6</micrometer.version>
+    <slf4j.version>2.0.17</slf4j.version>
+    <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
+    <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
+    <expressly.version>6.0.0</expressly.version>
   </properties>
 
   <scm>
@@ -55,6 +55,11 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>${logstash-logback-encoder.version}</version>
     </dependency>
     <dependency>
       <groupId>com.beust</groupId>
@@ -91,7 +96,6 @@
       <artifactId>jakarta.validation-api</artifactId>
       <version>${jakarta.validation-api.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.glassfish.expressly</groupId>
       <artifactId>expressly</artifactId>
